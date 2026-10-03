@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#090605">
+<title>MOHAMMED · Maison de Parfum</title>
+<meta name="description" content="Concept project: a scroll-driven luxury fragrance site. Fictional brand, designed and developed by Muhammed Elhuseyin.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="MOHAMMED · Maison de Parfum (concept)">
+<meta property="og:description" content="Where oud meets fire. A scroll-driven luxury fragrance concept site.">
+<meta property="og:image" content="https://housinasaad-creator.github.io/mohammed-perfume-site/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://housinasaad-creator.github.io/mohammed-perfume-site/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%A5%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="is-loading">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="flg" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff6a00"/><stop offset=".55" stop-color="#ffb347"/><stop offset="1" stop-color="#fff0b8"/></linearGradient>
+  </defs>
+</svg>
+
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="loader-flame" id="loaderFlame"></div>
+  <p class="loader-txt" id="loaderTxt" data-i="loader"></p>
+  <div class="loader-bar"><i id="loaderBar"></i></div>
+</div>
+
+<header class="hdr" id="hdr">
+  <a class="logo" href="#top" aria-label="Mohammed">
+    <span class="logo-flame" id="logoFlame"></span>
+    <span class="logo-word" id="brand" data-i="brand"></span>
+  </a>
+  <nav class="nav" id="nav">
+    <a href="#top" data-i="nav.home"></a>
+    <a href="#collection" data-i="nav.collection"></a>
+    <a href="#notes" data-i="nav.notes"></a>
+    <a href="#craft" data-i="nav.craft"></a>
+    <a href="#contact" data-i="nav.contact"></a>
+  </nav>
+  <div class="hdr-actions">
+    <button class="lang" id="lang" type="button" data-i="langBtn" aria-label="Language"></button>
+    <button class="bag" id="bag" type="button" aria-label="Bag">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 8V6a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <b id="bagCount">0</b>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+  <!-- ============ scroll story (video scrubbed by scroll) ============ -->
+  <section class="story" id="story" aria-label="Story">
+    <div class="stage" id="stage">
+      <div class="stage-glow" aria-hidden="true"></div>
+      <canvas id="film" aria-hidden="true"></canvas>
+      <canvas id="embers" aria-hidden="true"></canvas>
+      <div class="scrim" aria-hidden="true"></div>
+      <div class="chapters" id="chapters"></div>
+      <nav class="dots" id="dots" aria-label="Chapters"></nav>
+      <div class="cue" id="cue" aria-hidden="true"><i></i><span data-i="chapters.0.cta"></span></div>
+      <div class="progress" aria-hidden="true"><i id="progressBar"></i></div>
+    </div>
+  </section>
+
+  <!-- ============ collection ============ -->
+  <section class="sec" id="collection">
+    <div class="wrap">
+      <header class="sec-head rv">
+        <p class="kicker" data-i="collection.k"></p>
+        <h2 class="h2" data-i="collection.t"></h2>
+        <p class="lead" data-i="collection.s"></p>
+      </header>
+      <div class="show rv" id="show">
+        <div class="show-stage" id="showStage">
+          <div class="halo" id="halo" aria-hidden="true"></div>
+          <div class="show-bottle" id="showBottle"></div>
+          <div class="show-sparks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="show-info" id="showInfo">
+          <p class="tag" id="pTag"></p>
+          <h3 class="pname" id="pName"></h3>
+          <p class="pdesc" id="pDesc"></p>
+          <ul class="pyr" id="pPyr"></ul>
+          <div class="buy">
+            <div class="price"><b id="pPrice"></b><small id="pSize" data-i="collection.size"></small></div>
+            <button class="btn" id="addBtn" type="button"><span id="addTxt" data-i="collection.add"></span></button>
+          </div>
+        </div>
+      </div>
+      <div class="thumbs rv" id="thumbs" role="tablist"></div>
+    </div>
+  </section>
+
+  <!-- ============ notes ============ -->
+  <section class="sec" id="notes">
+    <div class="wrap">
+      <header class="sec-head rv">
+        <p class="kicker" data-i="notes.k"></p>
+        <h2 class="h2" data-i="notes.t"></h2>
+      </header>
+      <div class="cards3" id="notesCards"></div>
+    </div>
+  </section>
+
+  <!-- ============ craft ============ -->
+  <section class="sec craft" id="craft">
+    <div class="wrap">
+      <header class="sec-head rv">
+        <p class="kicker" data-i="craft.k"></p>
+        <h2 class="h2" data-i="craft.t"></h2>
+      </header>
+      <ol class="steps" id="steps"></ol>
+    </div>
+  </section>
+
+  <!-- ============ voices ============ -->
+  <section class="sec" id="voices">
+    <div class="wrap">
+      <header class="sec-head rv">
+        <p class="kicker" data-i="voices.k"></p>
+        <h2 class="h2" data-i="voices.t"></h2>
+      </header>
+      <div class="cards3" id="voiceCards"></div>
+    </div>
+  </section>
+
+  <!-- ============ contact ============ -->
+  <section class="sec contact" id="contact">
+    <div class="wrap contact-grid">
+      <header class="sec-head rv">
+        <p class="kicker" data-i="contact.k"></p>
+        <h2 class="h2" data-i="contact.t"></h2>
+        <p class="lead" data-i="contact.s"></p>
+      </header>
+      <form class="mail rv" id="mail" autocomplete="off">
+        <input id="mailIn" type="email" required aria-label="email">
+        <button class="btn" type="submit"><span id="mailBtn" data-i="contact.btn"></span></button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="ftr">
+  <div class="wrap ftr-grid">
+    <div class="ftr-brand"><span class="logo-flame" id="ftrFlame"></span><span class="logo-word" data-i="brand"></span></div>
+    <p class="ftr-made" data-i="footer.made"></p>
+    <p class="ftr-note" data-i="footer.concept"></p>
+    <p class="ftr-rights" data-i="footer.rights"></p>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="js/content.js"></script>
+<script src="js/bottles.js"></script>
+<script src="js/frames-config.js"></script>
+<script src="js/hero.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
