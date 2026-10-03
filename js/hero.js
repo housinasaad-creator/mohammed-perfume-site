@@ -90,8 +90,9 @@
     })();
   }
   function warmAround() {
-    if (step < LAST) warmRange(STOPS[step].v, STOPS[step + 1].v);
-    if (step > 0) setTimeout(function () { warmRange(STOPS[step - 1].v, STOPS[step].v); }, 700);
+    var s = step;
+    if (s < LAST) warmRange(STOPS[s].v, STOPS[s + 1].v);
+    if (s > 0) setTimeout(function () { if (step === s && !anim) warmRange(STOPS[s - 1].v, STOPS[s].v); }, 700);
   }
   ready.then(function () { setTimeout(warmAround, 300); });
 
