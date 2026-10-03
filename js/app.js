@@ -23,6 +23,13 @@
   // الاتجاه ثابت LTR. العناصر العربية تأخذ dir=rtl داخلياً لسلامة علامات الترقيم، لكنها تُحاذى لليسار.
   function setDir(el) { el.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr'); }
 
+  // صور الزجاجات (assets/bottles/<id>.webp و <id>-s.webp للمصغّرة). إذا لم تتحمّل صورة نرجع للرسم البرمجي.
+  function bottleHTML(p, small) {
+    var src = 'assets/bottles/' + p.id + (small ? '-s' : '') + '.webp';
+    return '<img class="photo" src="' + src + '" alt="MOHAMMED · ' + esc(p.name) + '" decoding="async" ' + (small ? 'loading="lazy" ' : '') +
+      'onerror="this.outerHTML=BOTTLES.svg(\'' + p.id + '\')">';
+  }
+
   function renderStatic() {
     var T = CONTENT[lang];
     document.documentElement.lang = T.lang;
@@ -36,7 +43,7 @@
       var dd = ' dir="' + (lang === 'ar' ? 'rtl' : 'ltr') + '"';
       return '<article class="chap' + (i === 0 ? ' brand' : '') + '">' +
         '<p class="k"' + dd + '>' + esc(c.k) + '</p><h2' + dd + '>' + esc(c.t) + '</h2><p class="s"' + dd + '>' + esc(c.s) + '</p>' +
-        (c.cta && i === 3 ? '<a class="go" href="#collection"' + dd + '>' + esc(c.cta) + '</a>' : '') + '</article>';
+        (c.cta && i === T.chapters.length - 1 ? '<a class="go" href="#collection"' + dd + '>' + esc(c.cta) + '</a>' : '') + '</article>';
     }).join('');
     $('#dots').innerHTML = T.dots.map(function (d, i) { return '<button type="button" data-i-dot="' + i + '" aria-label="' + esc(d) + '"><span dir="' + (lang === 'ar' ? 'rtl' : 'ltr') + '">' + esc(d) + '</span></button>'; }).join('');
     $$('#dots button').forEach(function (b) { b.addEventListener('click', function () { HERO.jump(+b.getAttribute('data-i-dot')); }); });
@@ -59,7 +66,7 @@
 
     // بطاقات المعرض المصغّرة
     $('#thumbs').innerHTML = T.products.map(function (p, i) {
-      return '<button type="button" class="thumb' + (i === state.cur ? ' on' : '') + '" role="tab" data-p="' + i + '"><div class="tb">' + BOTTLES.svg(p.id) + '</div><b dir="' + (lang === 'ar' ? 'rtl' : 'ltr') + '">' + esc(p.name) + '</b><small>' + money(p.price) + '</small></button>';
+      return '<button type="button" class="thumb' + (i === state.cur ? ' on' : '') + '" role="tab" data-p="' + i + '"><div class="tb">' + bottleHTML(p, true) + '</div><b dir="' + (lang === 'ar' ? 'rtl' : 'ltr') + '">' + esc(p.name) + '</b><small>' + money(p.price) + '</small></button>';
     }).join('');
     $$('#thumbs .thumb').forEach(function (b) { b.addEventListener('click', function () { select(+b.getAttribute('data-p'), true); }); });
 
@@ -75,7 +82,7 @@
     var T = CONTENT[lang], p = T.products[state.cur], C = T.collection, dir = lang === 'ar' ? 'rtl' : 'ltr';
     var bottle = $('#showBottle'), info = $('#showInfo');
     function apply() {
-      bottle.innerHTML = BOTTLES.svg(p.id);
+      bottle.innerHTML = bottleHTML(p, false);
       $('#halo').style.setProperty('--halo', HALOS[p.id]);
       $('#showBottle').style.setProperty('--halo', HALOS[p.id]);
       $('#pTag').textContent = p.tag; $('#pName').textContent = p.name; $('#pDesc').textContent = p.d;
@@ -136,6 +143,8 @@
 
   // ---------------------------------------------------------------- start
   renderStatic();
+  // تحميل مسبق للصور الكبيرة كي لا يتأخر التبديل بين العطور
+  CONTENT.en.products.forEach(function (p) { var im = new Image(); im.src = 'assets/bottles/' + p.id + '.webp'; });
   var lbar = $('#loaderBar');
   HERO.onProgress(function (f) { lbar.style.width = Math.round(f * 100) + '%'; });
   HERO.ready.then(function () {

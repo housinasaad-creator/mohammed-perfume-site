@@ -15,9 +15,10 @@ window.CONTENT = {
       { k: 'MAISON DE PARFUM · EST. 2026', t: 'MOHAMMED', s: 'Where oud meets fire.', cta: 'Scroll to ignite' },
       { k: 'CHAPTER I', t: 'Born from fire', s: 'Smoked oud, cinnamon bark and ember amber, lit slowly and left to rise.' },
       { k: 'CHAPTER II', t: 'One full turn', s: 'Turn it, and the scent turns with you: the first spark, the warm heart, the long amber trail.' },
-      { k: 'CHAPTER III', t: 'Settle into it', s: 'Twelve hours on skin. A quiet flame that never quite goes out.', cta: 'Explore the collection' }
+      { k: 'CHAPTER III', t: 'Crowned in gold', s: 'A hand-cut glass stopper and a brushed gold collar, sealed and numbered one by one.' },
+      { k: 'CHAPTER IV', t: 'Settle into it', s: 'Twelve hours on skin. A quiet flame that never quite goes out.', cta: 'Explore the collection' }
     ],
-    dots: ['Ignite', 'Rise', 'Turn', 'Settle'],
+    dots: ['Ignite', 'Rise', 'Turn', 'Crown', 'Settle'],
     collection: { k: 'THE COLLECTION', t: 'Six signatures, one flame.', s: 'Every bottle is a different way to wear the same fire.', add: 'Add to bag', added: 'Added', size: 'Eau de Parfum · 50 ml', top: 'Top', heart: 'Heart', base: 'Base' },
     notes: { k: 'THE NOTES', t: 'Three things we never compromise on.', items: [
       { t: 'Smoked Oud', d: 'Aged twelve years in clay vessels until the wood turns dark, sweet and resinous.', n: '01' },
@@ -59,9 +60,10 @@ window.CONTENT = {
       { k: 'دار العطور · منذ ٢٠٢٦', t: 'محمد', s: 'حيث يلتقي العود بالنار.', cta: 'مرّر لتشتعل' },
       { k: 'الفصل الأول', t: 'وُلد من النار', s: 'عود مدخّن ولحاء القرفة وعنبر الجمر، يشتعل ببطء ويرتفع بهدوء.' },
       { k: 'الفصل الثاني', t: 'دورة كاملة', s: 'أدِرْه فيدور العطر معك: الشرارة الأولى، والقلب الدافئ، وأثر العنبر الطويل.' },
-      { k: 'الفصل الثالث', t: 'استقر فيه', s: 'اثنتا عشرة ساعة على البشرة. لهب هادئ لا ينطفئ تماماً.', cta: 'اكتشف المجموعة' }
+      { k: 'الفصل الثالث', t: 'متوّج بالذهب', s: 'سدادة زجاج مقطوعة يدوياً وطوق ذهبي مصقول، تُختم وتُرقَّم واحدة واحدة.' },
+      { k: 'الفصل الرابع', t: 'استقر فيه', s: 'اثنتا عشرة ساعة على البشرة. لهب هادئ لا ينطفئ تماماً.', cta: 'اكتشف المجموعة' }
     ],
-    dots: ['اشتعال', 'ارتفاع', 'دوران', 'استقرار'],
+    dots: ['اشتعال', 'ارتفاع', 'دوران', 'تاج', 'استقرار'],
     collection: { k: 'المجموعة', t: 'ست بصمات، ولهبٌ واحد.', s: 'كل زجاجة طريقة مختلفة لارتداء النار نفسها.', add: 'أضف إلى الحقيبة', added: 'أُضيف', size: 'ماء عطر · ٥٠ مل', top: 'الافتتاحية', heart: 'القلب', base: 'القاعدة' },
     notes: { k: 'المكوّنات', t: 'ثلاثة أشياء لا نساوم عليها.', items: [
       { t: 'العود المدخّن', d: 'معتّق اثنتي عشرة سنة في أوانٍ فخارية حتى يصير الخشب داكناً حلواً راتنجياً.', n: '٠١' },
