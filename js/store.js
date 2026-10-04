@@ -208,7 +208,7 @@ export function initStore(ctx) {
   }
 
   function pay() {
-    S.busy = true; const c = T().checkout, d = dir();
+    S.busy = true; const c = T().checkout, d = dir(); ctx.sfx && ctx.sfx.whoosh();
     $('#coPane').innerHTML = `<div class="co-proc"><div class="loader-flame">${window.__flameSVG || ''}</div><p dir="${d}">${esc(c.processing)}</p></div>`;
     setTimeout(() => {
       const t = totals();

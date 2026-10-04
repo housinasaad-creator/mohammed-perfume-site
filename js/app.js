@@ -158,7 +158,7 @@ function updateHero() {
   $('#cue').classList.toggle('hide', step > 0 || pos > 0.04 || exp.shopT > 0.05);
 }
 
-function scrollToShop() { document.getElementById('collection').scrollIntoView({ behavior: 'smooth' }); }
+function scrollToShop() { sfx.whoosh(); document.getElementById('collection').scrollIntoView({ behavior: 'smooth' }); }
 
 /* ---------------------------------------------------------------- لغة + صوت + رأس الصفحة */
 $('#lang').addEventListener('click', () => {
@@ -196,7 +196,7 @@ async function start() {
       sfx,
       onStep: () => updateHero(),
       onFrame: () => updateHero(),
-      onFocus: (i) => { if (i === UI.focus && UI.ready) return; const animate = UI.ready; UI.focus = i; UI.ready = true; setAccent(i); fillPanel(i, animate); $('#fbImg').src = `assets/bottles/${SCENTS[i]}.webp`; sections && sections.setScentForWear && !window.__wearTouched && sections.setScentForWear(i); },
+      onFocus: (i) => { if (i === UI.focus && UI.ready) return; const animate = UI.ready; if (animate) sfx.clink(0.9 + (i % 4) * 0.12); UI.focus = i; UI.ready = true; setAccent(i); fillPanel(i, animate); $('#fbImg').src = `assets/bottles/${SCENTS[i]}.webp`; sections && sections.setScentForWear && !window.__wearTouched && sections.setScentForWear(i); },
       onSpray: (i, pt) => noteWords(i, pt),
       onHover: (kind) => window.dispatchEvent(new CustomEvent('mhd-cursor', { detail: kind ? T().shop.cur[kind] || null : null })),
       onShopT: (st) => document.documentElement.style.setProperty('--st', st.toFixed(3))

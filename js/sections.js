@@ -110,15 +110,16 @@ export function initSections(ctx) {
     W.raf = requestAnimationFrame(wearLoop);
   }
   function kickWear() { if (!W.raf && W.vis) { W.last = performance.now(); W.raf = requestAnimationFrame(wearLoop); } }
-  function setPlaying(on) { W.playing = on; $('#wearPlay').classList.toggle('on', on); $('#wearPlayTxt').textContent = on ? T().wear.pause : T().wear.play; if (on && W.t >= 12) { W.t = 0; slider.value = 0; } kickWear(); }
+  function setPlaying(on) { if (on && !W.playing) ctx.sfx && ctx.sfx.add(); W.playing = on; $('#wearPlay').classList.toggle('on', on); $('#wearPlayTxt').textContent = on ? T().wear.pause : T().wear.play; if (on && W.t >= 12) { W.t = 0; slider.value = 0; } kickWear(); }
   $('#wearPlay').addEventListener('click', () => setPlaying(!W.playing));
   slider.addEventListener('input', () => { W.t = parseFloat(slider.value); if (W.playing) setPlaying(false); kickWear(); });
   new IntersectionObserver((es) => { W.vis = es[0].isIntersecting; if (W.vis) { if (!W.started) { W.started = true; setPlaying(true); } kickWear(); } }, { threshold: .25 }).observe($('#wear'));
   function renderWear() {
     const t = T().wear, d = dir(), P = T().products;
     $('#wearChips').innerHTML = P.map((p, i) => `<button type="button" class="chip ${i === W.i ? 'on' : ''}" data-i="${i}" style="--c:${MOODS[SCENTS[i]].accent}" role="tab"><i></i><span dir="${d}">${esc(p.name)}</span></button>`).join('');
-    $('#wearChips').querySelectorAll('.chip').forEach((b) => b.onclick = () => { W.i = +b.dataset.i; ctx.accentTo && ctx.accentTo(W.i); renderWear(); kickWear(); });
+    $('#wearChips').querySelectorAll('.chip').forEach((b) => b.onclick = () => { W.i = +b.dataset.i; renderWear(); kickWear(); ctx.sfx && ctx.sfx.tick(); });
     const p = P[W.i], c = MOODS[SCENTS[W.i]], col = rgbOf(c.glow);
+    const wear = $('#wear'); wear.style.setProperty('--accent', c.accent); { const n = parseInt(c.accent.slice(1), 16); wear.style.setProperty('--accent-rgb', `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`); }
     const cols = ['#ffeebe', hex(c.glow), `rgb(${Math.round(col[0] * .7)},${Math.round(col[1] * .55)},${Math.round(col[2] * .45)})`];
     $('#wearLegend').innerHTML = [[p.top, t.top], [p.heart, t.heart], [p.base, t.base]].map(([n, l], i) => `<div class="lg" style="--lc:${cols[i]}"><i></i><b dir="${d}">${esc(n)}</b><span dir="${d}">${esc(l)}</span></div>`).join('');
     $('#wearPlayTxt').textContent = W.playing ? t.pause : t.play;
@@ -152,7 +153,7 @@ export function initSections(ctx) {
   const S_craft = { i: 0, io: null };
   function watchSteps() {
     if (S_craft.io) S_craft.io.disconnect();
-    S_craft.io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { S_craft.i = +e.target.dataset.i; document.querySelectorAll('.step').forEach((s) => s.classList.toggle('on', +s.dataset.i === S_craft.i)); setFlask(S_craft.i); } }), { rootMargin: '-45% 0px -45% 0px' });
+    S_craft.io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { S_craft.i = +e.target.dataset.i; const was = S_craft.last; S_craft.last = S_craft.i; if (was !== undefined && was !== S_craft.i) ctx.sfx && ctx.sfx.clink(0.8 + S_craft.i * 0.15); document.querySelectorAll('.step').forEach((s) => s.classList.toggle('on', +s.dataset.i === S_craft.i)); setFlask(S_craft.i); } }), { rootMargin: '-45% 0px -45% 0px' });
     document.querySelectorAll('.step').forEach((s) => S_craft.io.observe(s));
   }
 
@@ -171,6 +172,7 @@ export function initSections(ctx) {
       const tg = { el, inner, a: 0, v: (Math.random() - .5) * 1.4, k: 22 + i * 3, c: 1.7 + i * .12, lastX: null };
       el.addEventListener('pointermove', (e) => { if (tg.lastX !== null) { tg.v += clamp((e.clientX - tg.lastX) * 0.018, -1.2, 1.2); } tg.lastX = e.clientX; kickTags(); });
       el.addEventListener('pointerleave', () => { tg.lastX = null; });
+      el.addEventListener('pointerenter', () => { const now = performance.now(); if (now - (tg.lastBell || 0) > 700) { tg.lastBell = now; ctx.sfx && ctx.sfx.clink(0.55 + i * 0.13); } });
       el.addEventListener('click', () => { tg.v += (Math.random() < .5 ? -1 : 1) * 2.4; kickTags(); ctx.sfx && ctx.sfx.tick(); });
       tags.push(tg);
     });

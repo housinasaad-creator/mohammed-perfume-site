@@ -35,7 +35,7 @@ export class Experience {
     this.focus = 0; this.focusTarget = 0; this.lastFocus = -1;
     this.shopT = 0; this.active = true;
     this.bottles = [];
-    this.drag = null; this.hover = -2; this.userYaw = 0; this.userVel = 0;
+    this.drag = null; this.hover = -1; this.curKind = null; this.userYaw = 0; this.userVel = 0;
     this.pointer = new THREE.Vector2(); this.ray = new THREE.Raycaster();
     this.lookMix = new THREE.Vector2(); this.lookTgt = new THREE.Vector2();
     this.mood = { w: new Float32Array(6), boost: 0, boostKick: 0 };
@@ -162,20 +162,19 @@ export class Experience {
       return true;
     };
     void near;
+    const setKind = (kind) => { if (kind !== this.curKind) { this.curKind = kind; this.o.onHover && this.o.onHover(kind); } };
     window.addEventListener('pointermove', (e) => {
       if (e.pointerType === 'touch') return;
-      if (this.shopT < 0.8) { this.lookTgt.set(((e.clientX / innerWidth) - 0.5) * 2, ((e.clientY / innerHeight) - 0.5) * 2); }
-      else this.lookTgt.set(((e.clientX / innerWidth) - 0.5) * 2, ((e.clientY / innerHeight) - 0.5) * 2);
+      this.lookTgt.set(((e.clientX / innerWidth) - 0.5) * 2, ((e.clientY / innerHeight) - 0.5) * 2);
       if (this.drag) return;
-      if (!e.target || e.target.id !== 'gl') { if (this.hover !== -1) { this.hover = -1; this.o.onHover && this.o.onHover(null); } return; }
+      if (!e.target || e.target.id !== 'gl' || this.shopT < 0.8) { this.hover = -1; setKind(null); return; }
       toNdc(e);
-      if (this.shopT < 0.8) { const was = this.hover; this.hover = -1; if (was !== -1) this.o.onHover && this.o.onHover(null); return; }
       const i = pick();
       if (i !== this.hover) {
         this.hover = i;
         if (i >= 0 && i !== Math.round(this.focus)) this.o.sfx && this.o.sfx.tick();
-        this.o.onHover && this.o.onHover(i < 0 ? 'drag' : (i === Math.round(this.focus) ? 'rotate' : 'select'));
       }
+      setKind(i < 0 ? 'drag' : (i === Math.round(this.focus) ? 'rotate' : 'select'));
     }, { passive: true });
     canvas.addEventListener('pointerdown', (e) => {
       if (this.shopT < 0.8) return;
