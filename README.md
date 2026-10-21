@@ -1,20 +1,53 @@
-# MOHAMMED · Maison de Parfum
+# MOHAMMED · Maison de Parfum (مشروع تجريبي)
 
-A real-time 3D fragrance store, concept project.
+متجر عطور بمشهد ثلاثي الأبعاد حقيقي (WebGL / three.js) يعمل لحظياً في المتصفح، مع سلة وإتمام شراء كامل **تجريبي**.
+العلامة والمنتجات والآراء كلها **مفترضة**، والدفع تجريبي: لا شبكة ولا حفظ لأي بيانات بطاقة.
 
-Live: https://housinasaad-creator.github.io/mohammed-perfume-site/
+تصميم وتطوير: محمد الحسين (Muhammed Elhuseyin).
 
-The brand, products, prices and testimonials are fictional. The bag and checkout work end to end but are a demo: no payment is taken and nothing leaves the browser.
+## التشغيل
+- انقر مرتين على `run-site.bat` (يشغّل خادماً محلياً على 3400 ويفتح كروم).
+- **لا يعمل بفتح `index.html` مباشرة** (وحدات ES و importmap تحتاج خادماً). على GitHub Pages يعمل عادي.
 
-- Five-stop cinematic hero: each scroll moves a real 3D camera around the bottle (no video, so zooming never loses quality), lifts the gold crown and releases a spray.
-- Six hand-built glass bottles (refraction, liquid that sloshes, metal caps) on a glossy floor that reflects them. Each scent has its own atmosphere and particles: embers and fire, black smoke with gold veins, rose petals and bokeh, honey light shafts, a starry blue night, golden dunes.
-- Slide the shelf: bottles glide, tilt and slosh like items on a tray. Tap a bottle to spray it and watch the notes float out in the mist.
-- Live name engraving on the 3D bottle, sizes, quantity, fly-to-bag animation, promo code (FIRE10), free-shipping bar, three-step checkout with a demo card form and a wax-seal confirmation.
-- "Wear it": a 12-hour clock showing how top, heart and base notes open, bloom and settle.
-- Swinging hang tags, a flask that fills as the craft steps scroll by, generated sound design, and a brand cursor.
-- English / Arabic with a fixed left-to-right layout.
-- Plain HTML, CSS and modern JavaScript modules with a local copy of three.js. No build step.
+## ما فيه
+- **الهيرو (5 وقفات):** سكرول واحد (عجلة / سحب باللمس / أسهم / النقاط اليمنى) = وقفة. الكاميرا الحقيقية تدور وتقترب بلا أي فقدان جودة، الزجاجة تعلو وتدور دورة كاملة، يُرفع الغطاء الذهبي وتخرج رشّة. الجمر يطير بسرعة مع الحركة ويطفو ببطء عند الوقوف.
+- **رف العطور:** ست زجاجات مبنية بالكود (زجاج بانكسار حقيقي، سائل بسطح مائل يرتجّ، أغطية معدنية). كل عطر له **جوّه الخاص** وجسيماته: جمر ونار / دخان أسود بعروق ذهب / بتلات وبوكيه ورد / أشعة عسل / ليل أزرق بنجوم وقمر / كثبان وغروب. تنزلق الزجاجات على منصة لامعة تعكسها وتميل ويرتجّ سائلها كصينية متحركة (فيزياء).
+- **تفاعل:** اسحب الرف، اسحب الزجاجة المحددة لتدويرها، المس الزجاجة أو اضغط S لرشّها: يخرج رذاذ وتطفو كلمات النوتات (افتتاحية/قلب/قاعدة) داخله.
+- **نقش اسم حي:** اكتب اسماً فيظهر ذهبياً على الزجاجة المجسّمة وأنت تكتب (والعربي "محمد" على ظهر كل زجاجة).
+- **المتجر:** أحجام 30/50/100 مل، كمية، إضافة للحقيبة بطيران الزجاجة إلى أيقونة الحقيبة، درج الحقيبة (كمية، حذف، شريط الشحن المجاني فوق 200$، كود خصم `FIRE10` = 10%)، ثم إتمام الشراء بثلاث خطوات: بيانات → دفع → تأكيد (ختم شمع وقصاصات ذهبية، رقم طلب، موعد توصيل). الحقيبة تُحفظ في المتصفح.
+- **للتصوير:** زر "Fill demo details" يعبّئ بيانات وهمية، وزر "Use test card" يعبّئ البطاقة التجريبية `4242 4242 4242 4242`. أي بطاقة غير بطاقات الاختبار تُرفض حتى لا يكتب أحد بطاقته الحقيقية.
+- **جرّبه:** ساعة عطر (12 ساعة على البشرة) تحرّكها بيدك أو تشغّلها: تنفتح الافتتاحية وتزهر النوتات الوسطى وتستقر القاعدة، مع منحنيات حية.
+- **الصنعة:** دورق يمتلئ ويتغير لونه مع كل خطوة وأنت تمرّر.
+- **آراء:** بطاقات معلّقة بخيوط تتأرجح بفيزياء عند لمسها بالماوس.
+- **صوت:** مؤثرات مولّدة بالكود (رذاذ، زجاج، وشوشة بين الوقفات، ختم الطلب، طقطقة نار خفيفة). مطفأ افتراضياً، زر الصوت أعلى الصفحة.
+- **مؤشر ماوس بهوية العلامة:** شعلة + حلقة ذهبية + شرار، تتحول لكلمة (Drag / Rotate / Select / Sound).
+- لغتان (EN / عربي). الصفحة **لا تنقلب أبداً**: الاتجاه LTR والنص العربي يُحاذى لليسار.
+- الأداء: على RTX 4050 يثبت على سقف الشاشة (144Hz) حتى بدقة 4K. وللأجهزة الأضعف تخفّض الجودة تلقائياً (دقة، خلفية، شفافية الزجاج). على الموبايل جودة أخف تلقائياً. بدون WebGL يعمل الموقع بصور العطور الثابتة.
 
-Product photography is AI-generated concept imagery. The 3D scene itself is pure code.
+## الصور
+- `assets/bottles/*.webp`: صور منتجات واقعية مولّدة بالذكاء الاصطناعي (لوما، الخطة المجانية = استخدام غير تجاري). تُستعمل في الحقيبة والمصغّرات وبديل بدون WebGL، وقصصنا منها الشريط السفلي الذي فيه العلامة المائية.
+- المشهد الثلاثي الأبعاد نفسه كله مولّد بالكود ولا يعتمد على أي صور أو فيديو.
 
-Designed and developed by Muhammed Elhuseyin.
+## الملفات
+```
+index.html              هيكل الصفحة
+css/style.css           التصميم (لون التمييز --accent يتغير مع كل عطر)
+js/gl/core.js           المشهد: renderer + بيئة انعكاسات + خلفيات الأجواء + جسيمات + رذاذ + منصة لامعة
+js/gl/shaders.js        كل الشيدرات (الأجواء الستة، السائل، الجسيمات، الرذاذ، انعكاس الأرض)
+js/gl/bottles.js        الزجاجات الست بالكود + النقش
+js/gl/experience.js     الوقفات الخمس + الرف + الفيزياء + الإدخال (ماوس/لمس/لوحة)
+js/gl/sfx.js            الصوت
+js/app.js               الواجهة: لغات، لوحة العطر، رذاذ الكلمات، الإضافة للحقيبة
+js/store.js             الحقيبة + إتمام الشراء + الدفع التجريبي
+js/sections.js          ساعة العطر + الدورق + البطاقات المعلّقة
+js/content.js           كل النصوص (عربي + إنجليزي) والعطور وأسعارها
+js/cursor.js            مؤشر الماوس
+js/vendor/              three.js r172 (محلي، لا يعتمد على CDN)
+```
+الوقفات (كاميرا ورفع ودوران) في مصفوفة `HERO` أعلى `js/gl/experience.js`. ألوان وأجواء كل عطر في `MOODS` و`PART` داخل `js/gl/core.js`.
+
+النسخة السابقة (فيديو لوما + إطارات) محفوظة في `C:\mhd_v1_backup` وفي تاريخ ريبو GitHub.
+
+
+## Hero as video (2026-10-21)
+The five hero stops are a pre-rendered high-res video (assets/hero, engine js/hero-video.js, four scroll steps + a reversed twin for smooth back-scroll); the live WebGL scene only runs for the shop below. The full live 3D hero is kept untouched in js/gl + js/app.js: open the site with ?live3d to run it (also used automatically for reduced-motion / data-saver / video failure). Sources before the change: _backup_before_video_hero.
