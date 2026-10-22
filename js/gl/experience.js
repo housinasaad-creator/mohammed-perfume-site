@@ -34,9 +34,8 @@ export class Experience {
     this.step = 0; this.pos = 0; this.anim = null; this.introStart = null;
     this.focus = 0; this.focusTarget = 0; this.lastFocus = -1;
     this.shopT = 0; this.active = true;
-    /* هيرو الفيديو: الهيرو يُشغَّل بفيديو مُصوَّر مسبقاً (js/hero-video.js)، فتبقى هنا فقط حالة المتجر الحي؛ الكانفس لا يرسم ما دام الفيديو ظاهراً (قمة الصفحة) */
-    this.vOn = !opts.videoHero;
-    if (opts.videoHero) this.introStart = performance.now() - 9999;      // لا مقدمة حيّة: الفيديو هو المقدمة
+    /* skipHero (جهاز ضعيف): لا وقفات للهيرو؛ الوقفة الأخيرة تطابق الأولى بصرياً، فأول سكرول يدخل المتجر مباشرة */
+    if (opts.skipHero) { this.step = LAST; this.pos = LAST; this.introStart = performance.now() - 9999; }
     this.bottles = [];
     this.drag = null; this.hover = -1; this.curKind = null; this.userYaw = 0; this.userVel = 0;
     this.pointer = new THREE.Vector2(); this.ray = new THREE.Raycaster();
@@ -49,7 +48,7 @@ export class Experience {
 
   async init(progress) {
     const canvas = this.o.canvas;
-    this.stage = new Stage(canvas, { mobile: this.mobile || /Android|iPhone|iPad/i.test(navigator.userAgent), preserve: this.o.preserve });
+    this.stage = new Stage(canvas, { mobile: this.mobile || this.o.lite || /Android|iPhone|iPad/i.test(navigator.userAgent), preserve: this.o.preserve });
     const S = this.stage;
     let n = 0;
     for (const id of PRODUCT_IDS) {
@@ -82,16 +81,14 @@ export class Experience {
       const io = new IntersectionObserver((es) => {
         es.forEach((e) => vis.set(e.target, e.isIntersecting));
         const on = [...vis.values()].some(Boolean);
-        if (on !== this.active) { this.active = on; this.applyRun(); }
+        if (on !== this.active) { this.active = on; on ? S.start() : S.stop(); }
       }, { threshold: 0 });
       watch.forEach((el) => io.observe(el));
     }
     S.warm(this.bottles.flatMap((b) => [b.holder, b.shadow, b.mirror.root]));
-    this.applyRun();
+    S.start();
     return this;
   }
-  /* الرسم يعمل فقط حين يكون الكانفس ظاهراً: قسم المتجر مرئي، وفي وضع هيرو الفيديو أيضاً بعد مغادرة قمة الصفحة */
-  applyRun() { const run = this.active && this.vOn; run ? this.stage.start() : this.stage.stop(); }
 
   /* ---------------------------------------------------------------- مدخلات */
   bindInput(canvas) {
@@ -105,7 +102,7 @@ export class Experience {
       const adx = Math.abs(e.deltaX), ady = Math.abs(e.deltaY);
       // رف العطور: سحب أفقي بالتراك باد
       if (this.shopT > 0.85 && adx > ady && adx > 2) { this.focusTarget = clamp(Math.round(this.focusTarget + Math.sign(e.deltaX)), 0, this.bottles.length - 1); e.preventDefault(); return; }
-      if (this.o.videoHero) return;                      // وقفات الهيرو يديرها محرّك الفيديو
+      if (this.o.skipHero) return;
       let dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
       if (Math.abs(dy) < 2) return;
       if (window.scrollY > 2 || this.o.locked?.()) { consumed = true; return; }
@@ -123,7 +120,7 @@ export class Experience {
     let tY = 0, tX = 0, tTop = false, tDone = false;
     window.addEventListener('touchstart', (e) => { const t = e.touches[0]; tY = t.clientY; tX = t.clientX; tTop = window.scrollY <= 2; tDone = false; }, { passive: true });
     window.addEventListener('touchmove', (e) => {
-      if (this.o.videoHero) return;
+      if (this.o.skipHero) return;
       if (!tTop || e.touches.length > 1 || window.scrollY > 2 || this.o.locked?.()) return;
       const t = e.touches[0], dy = tY - t.clientY, dx = tX - t.clientX;
       if (Math.abs(dy) < 6 || Math.abs(dy) < Math.abs(dx)) return;
@@ -144,7 +141,7 @@ export class Experience {
         else if (k === 's' || k === 'S') { this.sprayFocused(); }
         return;
       }
-      if (window.scrollY > 2 || this.o.videoHero) return;
+      if (window.scrollY > 2 || this.o.skipHero) return;
       const down = k === 'ArrowDown' || k === 'PageDown' || k === ' ', up = k === 'ArrowUp' || k === 'PageUp';
       if (!down && !up) return;
       if (!this.busy() && ((down && this.step >= LAST) || (up && this.step <= 0))) return;
@@ -240,7 +237,6 @@ export class Experience {
     const vh = window.innerHeight;
     this.shopT = smooth(clamp(window.scrollY / (vh * 0.9), 0, 1));
     this.o.onShopT && this.o.onShopT(this.shopT);
-    if (this.o.videoHero && this.stage) { const on = window.scrollY > 2; if (on !== this.vOn) { this.vOn = on; this.applyRun(); } }
   }
 
   /* ---------------------------------------------------------------- رذاذ */

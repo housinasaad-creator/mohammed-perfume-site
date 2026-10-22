@@ -34,16 +34,6 @@ html[lang="ar"] [data-i], html[lang="ar"] .tag, html[lang="ar"] .pname, html[lan
 /* المشهد الثلاثي الأبعاد: ثابت خلف كل شيء */
 #gl { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; background: #050403; touch-action: pan-y; }
 
-/* الهيرو فيديو: طبقة ثابتة فوق الكانفس تختفي بتلاشٍ حين نغادر قمة الصفحة والكانفس الحي جاهز (نفس وضعية الكاميرا فلا قفزة) */
-.hv-stage { display: none; position: fixed; inset: 0; z-index: 0; background: #050403; pointer-events: none; transition: opacity .38s ease, visibility 0s linear 0s; }
-html.hv-on .hv-stage { display: block; }
-.hv-stage[hidden] { display: none !important; }
-.hv-stage.off { opacity: 0; visibility: hidden; transition: opacity .38s ease, visibility 0s linear .38s; }
-.hv-stage .hv, .hv-stage .hv-poster, .hv-stage .hv-poster img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; }
-.hv-stage .hv-poster { z-index: 1; transition: opacity .9s var(--ease) .1s; }
-.hv-stage.on3d .hv-poster { opacity: 0; }
-html.hv-on.no-gl .hero::before { display: none; }
-
 /* ------------------------------------------------------------ loader */
 .loader { position: fixed; inset: 0; z-index: 400; display: grid; place-content: center; justify-items: center; gap: 18px;
   background: radial-gradient(circle at 50% 45%, #1d0f08 0%, #070504 70%); transition: opacity .9s ease, visibility .9s; }
@@ -466,3 +456,6 @@ html.no-gl body { background: radial-gradient(70% 60% at 60% 40%, rgba(var(--acc
 html.no-gl .fb-stage { display: grid; place-items: center; position: absolute; left: 4vw; top: calc(var(--hdr) + 20px); bottom: 110px; width: 40vw; pointer-events: none; }
 html.no-gl .fb-stage img { max-height: 100%; max-width: 100%; -webkit-mask-image: radial-gradient(closest-side, #000 62%, transparent 100%); mask-image: radial-gradient(closest-side, #000 62%, transparent 100%); }
 html.no-gl .hero::before { content: ""; position: absolute; right: 6vw; top: 14vh; bottom: 12vh; width: 38vw; background: url(../assets/bottles/ember.webp) center / contain no-repeat; -webkit-mask-image: radial-gradient(closest-side, #000 62%, transparent 100%); mask-image: radial-gradient(closest-side, #000 62%, transparent 100%); }
+
+/* جهاز ضعيف (app.js → deviceTier = weak): بلا وقفات للهيرو، فتُخفى النقاط وشريط التقدّم */
+.hero-weak .dots, .hero-weak .progress { display: none; }

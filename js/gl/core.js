@@ -35,7 +35,7 @@ export class Stage {
     this.renderer.toneMappingExposure = 1.05;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.setClearColor(0x050403, 1);
-    this.quality = { dpr: Math.min(window.devicePixelRatio || 1, this.mobile ? 1.5 : 2), bg: this.mobile ? 0.38 : 0.55, trans: this.mobile ? 0.6 : 0.85, parts: 1, level: 0 };
+    this.quality = { dpr: Math.min(window.devicePixelRatio || 1, this.mobile ? 1.25 : 1.5), bg: this.mobile ? 0.32 : 0.45, trans: this.mobile ? 0.5 : 0.7, parts: 1, level: 0 };
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(26, 1, 0.1, 120);
     this.scene.add(this.camera);

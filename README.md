@@ -48,6 +48,5 @@ js/vendor/              three.js r172 (محلي، لا يعتمد على CDN)
 
 النسخة السابقة (فيديو لوما + إطارات) محفوظة في `C:\mhd_v1_backup` وفي تاريخ ريبو GitHub.
 
-
-## Hero as video (2026-10-21)
-The five hero stops are a pre-rendered high-res video (assets/hero, engine js/hero-video.js, four scroll steps + a reversed twin for smooth back-scroll); the live WebGL scene only runs for the shop below. The full live 3D hero is kept untouched in js/gl + js/app.js: open the site with ?live3d to run it (also used automatically for reduced-motion / data-saver / video failure). Sources before the change: _backup_before_video_hero.
+## Hero: live 3D again (2026-10-22)
+The hero is the live 3D scene again, a little lighter (lower resolution cap, fewer particles, simpler parts) and released from memory when far away. Devices with 4 cores or fewer, or 2 GB of RAM or less, skip the 3D hero: it becomes one still screen so the first scroll leaves it. Add `?hero=on` or `?hero=off` to force either way. The pre-rendered video version of the hero is kept in `_video_hero_version` (not deployed).
