@@ -466,3 +466,6 @@ html.no-gl body { background: radial-gradient(70% 60% at 60% 40%, rgba(var(--acc
 html.no-gl .fb-stage { display: grid; place-items: center; position: absolute; left: 4vw; top: calc(var(--hdr) + 20px); bottom: 110px; width: 40vw; pointer-events: none; }
 html.no-gl .fb-stage img { max-height: 100%; max-width: 100%; -webkit-mask-image: radial-gradient(closest-side, #000 62%, transparent 100%); mask-image: radial-gradient(closest-side, #000 62%, transparent 100%); }
 html.no-gl .hero::before { content: ""; position: absolute; right: 6vw; top: 14vh; bottom: 12vh; width: 38vw; background: url(../assets/bottles/ember.webp) center / contain no-repeat; -webkit-mask-image: radial-gradient(closest-side, #000 62%, transparent 100%); mask-image: radial-gradient(closest-side, #000 62%, transparent 100%); }
+
+/* الهيرو فيديو دائر بلا وقفات (js/hero-video.js): لا نقاط ولا شريط تقدّم ولا ساعة لأنها تتبع وقفات لم تعد موجودة */
+html.hv-on .dots, html.hv-on .progress, html.hv-on .clock { display: none; }
