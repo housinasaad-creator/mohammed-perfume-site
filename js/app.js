@@ -29,10 +29,12 @@ const dirAttr = () => (lang === 'ar' ? 'rtl' : 'ltr');
 const UI = { size: 50, qty: 1, focus: 0, engrave: '', ready: false, lastStep: 0 };
 const sfx = new Sfx();
 let exp = null, store = null, sections = null;
-/* مستوى الجهاز: weak = معالج 4 أنوية أو أقل أو رام 2 غيغا أو أقل (أو توفير بيانات) → بلا وقفات الهيرو: شاشة واحدة بالعنوان فيُتخطّى من أول سكرول؛ lite = متوسط → جودة أخفّ؛ ?hero=on / ?hero=off للتجربة */
-const deviceTier = (() => { const q = new URLSearchParams(location.search).get('hero'), c = navigator.hardwareConcurrency || 8, m = navigator.deviceMemory || 8; if (q === 'on') return 'full'; if (q === 'off') return 'weak'; if (navigator.connection && navigator.connection.saveData) return 'weak'; return (c <= 4 || m <= 2) ? 'weak' : (c <= 6 || m <= 4) ? 'lite' : 'full'; })();
-const SKIP = deviceTier === 'weak';
-if (SKIP) document.documentElement.classList.add('hero-weak');
+/* هيرو الفيديو: الوقفات الخمس فيديو مُصوَّر مسبقاً (js/hero-video.js)، والمتجر وحده مشهد حي. HV.on=false يعيد الهيرو الحي القديم كاملاً (احتياط) */
+const HV = { on: false, step: 0, pos: 0, expReady: false, noGL: false };
+let hv = null;
+const shopTv = () => { const t = clamp(window.scrollY / (innerHeight * 0.9), 0, 1); return t * t * (3 - 2 * t); };
+const goHero = (k) => { if (HV.on && hv) hv.jump(k); else if (exp) exp.goStep(k); };
+const isLocked = () => document.body.classList.contains('is-loading') || document.body.classList.contains('modal-open') || $('#cart').classList.contains('on');
 
 /* ---------------------------------------------------------------- لون التمييز يتبع العطر */
 function setAccent(i) {
@@ -58,7 +60,7 @@ function renderStatic() {
     return `<article class="chap${i === 0 ? ' brand' : ''}"><p class="k"${dd}>${esc(c.k)}</p><h2${dd}>${esc(c.t)}</h2><p class="s"${dd}>${esc(c.s)}</p>${c.cta ? `<a class="go" href="#collection"${dd}>${esc(c.cta)}</a>` : ''}</article>`;
   }).join('');
   $('#dots').innerHTML = t.dots.map((d, i) => `<button type="button" data-i-dot="${i}" aria-label="${esc(d)}"><span dir="${dirAttr()}">${esc(d)}</span></button>`).join('');
-  $$('#dots button').forEach((b) => b.addEventListener('click', () => { if (exp) exp.goStep(+b.getAttribute('data-i-dot')); }));
+  $$('#dots button').forEach((b) => b.addEventListener('click', () => goHero(+b.getAttribute('data-i-dot'))));
   $('.go', $('#chapters')) && $('.go', $('#chapters')).addEventListener('click', (e) => { e.preventDefault(); scrollToShop(); });
   // رف المصغّرات
   $('#shelfNav').innerHTML = `<button class="sn-arrow" type="button" id="snPrev" aria-label="${esc(t.shop.prev)}">‹</button>` +
@@ -154,13 +156,25 @@ function toast(msg) { const t = $('#toast'); t.textContent = msg; t.setAttribute
 
 /* ---------------------------------------------------------------- الهيرو: عناوين + تقدم */
 function updateHero() {
-  if (!exp) return;
-  const step = SKIP ? 0 : exp.step, pos = SKIP ? 0 : exp.pos;
-  $$('#chapters .chap').forEach((c, i) => c.classList.toggle('on', i === step && Math.abs(pos - i) < 0.25 && exp.shopT < 0.4));
+  if (!HV.on && !exp) return;
+  const step = HV.on ? HV.step : exp.step, pos = HV.on ? HV.pos : exp.pos, st = exp ? exp.shopT : shopTv();
+  $$('#chapters .chap').forEach((c, i) => c.classList.toggle('on', i === step && Math.abs(pos - i) < 0.25 && st < 0.4));
   $$('#dots button').forEach((b, i) => { b.classList.toggle('on', i === step); b.setAttribute('aria-current', i === step ? 'true' : 'false'); });
   $('#progressBar').style.width = (pos / 4 * 100).toFixed(1) + '%';
-  $('#cue').classList.toggle('hide', step > 0 || pos > 0.04 || exp.shopT > 0.05);
+  $('#cue').classList.toggle('hide', step > 0 || pos > 0.04 || st > 0.05);
 }
+/* الفيديو يختفي حين يصير الكانفس الحي جاهزاً وننزل عن القمة (نفس الوضعية: الوقفة الأولى = الأخيرة)؛ وهو مخفي نقفز به صامتاً إلى الأخيرة كي يتطابق عند العودة */
+function syncVideoStage() {
+  if (!HV.on) return;
+  const scrolled = window.scrollY > 2;
+  if (!exp) document.documentElement.style.setProperty('--st', shopTv().toFixed(3));
+  updateHero();
+  const off = scrolled && (HV.expReady || HV.noGL);
+  $('#hvStage').classList.toggle('off', off);
+  if (off && hv) { const want = HV.home ? 0 : 4; if (hv.stage !== want) hv.snap(want); } else if (!scrolled) HV.home = false;
+  if (hv) { if (window.scrollY > innerHeight * 2.5) hv.unload(); else if (window.scrollY < innerHeight * 1.5) hv.load(); }   // الفيديو يُفرَّغ من الذاكرة حين نبتعد عن الهيرو ويعود قبل الوصول للقمة
+}
+window.addEventListener('scroll', () => syncVideoStage(), { passive: true });
 
 function scrollToShop() { sfx.whoosh(); document.getElementById('collection').scrollIntoView({ behavior: 'smooth' }); }
 
@@ -181,11 +195,24 @@ const hdr = $('#hdr');
 window.addEventListener('scroll', () => hdr.classList.toggle('solid', window.scrollY > 40), { passive: true });
 $$('#nav a, .logo').forEach((a) => a.addEventListener('click', (e) => {
   const h = a.getAttribute('href');
-  if (h === '#top') { e.preventDefault(); exp && exp.goStep(0, window.scrollY > innerHeight * 0.6); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  if (h === '#top') { e.preventDefault(); if (HV.on) { if (window.scrollY > 2) HV.home = true; else goHero(0); } else exp && exp.goStep(0, window.scrollY > innerHeight * 0.6); window.scrollTo({ top: 0, behavior: 'smooth' }); }
 }));
 $('#mail').addEventListener('submit', (e) => { e.preventDefault(); toast(T().contact.thanks); e.target.reset(); });
 
 /* ---------------------------------------------------------------- تشغيل */
+const expOpts = (videoHero) => ({
+  canvas: $('#gl'), heroEl: $('#hero'), shopEl: $('#collection'),
+  locked: () => document.body.classList.contains('modal-open') || $('#cart').classList.contains('on'),
+  sfx, videoHero,
+  onStep: () => updateHero(),
+  onFrame: () => updateHero(),
+  onFocus: (i) => { if (i === UI.focus && UI.ready) return; const animate = UI.ready; if (animate) sfx.clink(0.9 + (i % 4) * 0.12); UI.focus = i; UI.ready = true; setAccent(i); fillPanel(i, animate); $('#fbImg').src = `assets/bottles/${SCENTS[i]}.webp`; sections && sections.setScentForWear && !window.__wearTouched && sections.setScentForWear(i); },
+  onSpray: (i, pt) => noteWords(i, pt),
+  onHover: (kind) => window.dispatchEvent(new CustomEvent('mhd-cursor', { detail: kind ? T().shop.cur[kind] || null : null })),
+  onShopT: (st) => document.documentElement.style.setProperty('--st', st.toFixed(3))
+});
+const shelfFallback = () => $$('#shelfNav .sn').forEach((b) => b.addEventListener('click', () => { UI.focus = +b.dataset.i; setAccent(UI.focus); fillPanel(UI.focus, true); $('#fbImg').src = `assets/bottles/${SCENTS[UI.focus]}.webp`; }));
+
 async function start() {
   renderStatic();
   sections = initSections({ T, lang: () => lang, sfx, accentTo: (i) => setAccent(i) });
@@ -193,23 +220,71 @@ async function start() {
   renderStatic();
   const lbar = $('#loaderBar');
   const showUI = () => { lbar.style.width = '100%'; setTimeout(() => { $('#loader').classList.add('done'); document.body.classList.remove('is-loading'); }, 350); };
+  const saveData = !!(navigator.connection && navigator.connection.saveData);
+  if (!reduce && !saveData && !/[?&]live3d\b/.test(location.search)) {
+    try { await startVideoHero(lbar, showUI); return; } catch (err) { console.warn('Video hero unavailable, using the live 3D hero', err); fallbackToLive(); }
+  }
+  await startLive3D(lbar, showUI);
+}
+
+/* ------------------------------------------------ الهيرو كفيديو (الأساس): الوقفات الخمس فيديو، والكانفس الحي يتولى المتجر */
+async function startVideoHero(lbar, showUI) {
+  const { initHeroVideo } = await import('./hero-video.js');
+  const stage = $('#hvStage'), vid = $('#hv');
+  HV.on = true; document.documentElement.classList.add('hv-on');
+  let vOk = false, eOk = false, shown = false, fillV = 0, fillE = 0, lastInt = 0;
+  const bar = () => { lbar.style.width = Math.round(((vOk ? 1 : fillV) * 0.5 + fillE * 0.5) * 100) + '%'; };
+  const reveal = () => { if (shown) return; shown = true; showUI(); };
+  const tryShow = () => { if (vOk && eOk) reveal(); };
+  const sprayPt = () => (innerWidth <= 860 ? { x: innerWidth * 0.5, y: innerHeight * 0.26 } : { x: innerWidth * 0.68, y: innerHeight * 0.3 });
+  hv = initHeroVideo({
+    hero: $('#hero'), stick: stage, video: vid, reduced: false, saveData: false, virtual: true,
+    stops: [0, 3.4, 6.6, 10.0, 13.6],
+    clips: 'assets/hero/', mobileQuery: '(max-width: 860px)', locked: isLocked,
+    onGo: () => sfx.whoosh(),
+    onPos: (p) => {
+      HV.pos = p; HV.step = Math.round(p);
+      if (Number.isInteger(p)) { if (p === 3 && lastInt < 3) { sfx.spray(); noteWords(0, sprayPt()); } lastInt = p; }
+      updateHero();
+    },
+    onReady: () => { vOk = true; bar(); tryShow(); },
+    onFail: () => { fallbackToLive(); reveal(); }
+  });
+  vid.addEventListener('progress', () => { try { const b = vid.buffered; if (b.length && vid.duration) { fillV = Math.min(0.95, b.end(b.length - 1) / vid.duration); bar(); } } catch (e) {} });
+  window.__mhd = { exp: null, store, UI, sfx, hv, HV };
+  hv.load(); updateHero();
+  setTimeout(reveal, 9000);
+  /* المتجر الحي يُبنى بالتوازي خلف شاشة التحميل كي لا يتقطع الفيديو لاحقاً */
   try {
-    exp = new Experience({
-      canvas: $('#gl'), heroEl: $('#hero'), shopEl: $('#collection'),
-      locked: () => document.body.classList.contains('modal-open') || $('#cart').classList.contains('on'),
-      sfx, skipHero: SKIP, lite: deviceTier !== 'full',
-      onStep: () => updateHero(),
-      onFrame: () => updateHero(),
-      onFocus: (i) => { if (i === UI.focus && UI.ready) return; const animate = UI.ready; if (animate) sfx.clink(0.9 + (i % 4) * 0.12); UI.focus = i; UI.ready = true; setAccent(i); fillPanel(i, animate); $('#fbImg').src = `assets/bottles/${SCENTS[i]}.webp`; sections && sections.setScentForWear && !window.__wearTouched && sections.setScentForWear(i); },
-      onSpray: (i, pt) => noteWords(i, pt),
-      onHover: (kind) => window.dispatchEvent(new CustomEvent('mhd-cursor', { detail: kind ? T().shop.cur[kind] || null : null })),
-      onShopT: (st) => document.documentElement.style.setProperty('--st', st.toFixed(3))
-    });
+    exp = new Experience(expOpts(true));
+    await exp.init((f) => { fillE = f; bar(); });
+    window.__mhd.exp = exp; HV.expReady = true;
+    setAccent(0); syncVideoStage();
+  } catch (err) {
+    console.warn('WebGL unavailable, the shop uses the static fallback', err);
+    document.documentElement.classList.add('no-gl'); exp = null; HV.noGL = true; shelfFallback(); syncVideoStage();
+  }
+  eOk = true; fillE = 1; bar(); tryShow();
+}
+
+/* الفيديو فشل بعد البدء: نرجع للهيرو الحي (المشهد الثلاثي الأبعاد محفوظ كاملاً) */
+function fallbackToLive() {
+  HV.on = false; hv = null; document.documentElement.classList.remove('hv-on');
+  const st = $('#hvStage'); st && (st.hidden = true);
+  if (exp) { exp.o.videoHero = false; exp.vOn = true; exp.applyRun(); exp.goStep(0, true); }
+  updateHero();
+}
+
+/* ------------------------------------------------ الهيرو الحي القديم (محفوظ: ?live3d أو حركة أقل أو توفير بيانات أو فشل الفيديو) */
+async function startLive3D(lbar, showUI) {
+  if (exp) return;                                                // بُني أصلاً (حالة فشل الفيديو بعد بدء المتجر)
+  try {
+    exp = new Experience(expOpts(false));
     await exp.init((f) => { lbar.style.width = Math.round(f * 100) + '%'; });
     window.__mhd = { exp, store, UI, sfx };
     setAccent(0);
     showUI();
-    if (!SKIP) setTimeout(() => exp.intro(), 500);
+    setTimeout(() => exp.intro(), 500);
   } catch (err) {
     console.warn('WebGL unavailable, using the static fallback', err);
     document.documentElement.classList.add('no-gl');
@@ -217,7 +292,7 @@ async function start() {
     // بدون 3D: الوقفات نصية فقط
     let step = 0; const show = () => { $$('#chapters .chap').forEach((c, i) => c.classList.toggle('on', i === step)); $$('#dots button').forEach((b, i) => b.classList.toggle('on', i === step)); };
     show(); $$('#dots button').forEach((b) => b.addEventListener('click', () => { step = +b.getAttribute('data-i-dot'); show(); }));
-    $$('#shelfNav .sn').forEach((b) => b.addEventListener('click', () => { UI.focus = +b.dataset.i; setAccent(UI.focus); fillPanel(UI.focus, true); $('#fbImg').src = `assets/bottles/${SCENTS[UI.focus]}.webp`; }));
+    shelfFallback();
   }
 }
 document.fonts && document.fonts.ready ? document.fonts.ready.then(start) : start();
